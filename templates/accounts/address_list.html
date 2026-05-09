@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}عناويني — متجر القهوة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm me-3">
+                    &rarr; رجوع
+                </a>
+                <h2 class="mb-0">عناويني</h2>
+            </div>
+            <a href="{% url 'accounts:address_create' %}" class="btn btn-dark btn-sm">
+                + إضافة عنوان
+            </a>
+        </div>
+
+        {% if addresses %}
+            {% for address in addresses %}
+            <div class="card shadow-sm mb-3{% if address.is_default %} border-dark{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="fw-semibold mb-1">
+                                {{ address.full_name }}
+                                {% if address.is_default %}
+                                    <span class="badge bg-dark ms-2">افتراضي</span>
+                                {% endif %}
+                            </p>
+                            <p class="mb-1 text-muted small">{{ address.phone }}</p>
+                            <p class="mb-1 small">{{ address.street }}</p>
+                            <p class="mb-0 small">{{ address.city }}</p>
+                        </div>
+                        <div class="d-flex gap-2 ms-3 flex-shrink-0">
+                            <a
+                                href="{% url 'accounts:address_update' address.pk %}"
+                                class="btn btn-outline-secondary btn-sm"
+                            >
+                                تعديل
+                            </a>
+                            <a
+                                href="{% url 'accounts:address_delete' address.pk %}"
+                                class="btn btn-outline-danger btn-sm"
+                            >
+                                حذف
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5 text-muted">
+                <p class="mb-3">لا توجد عناوين محفوظة.</p>
+                <a href="{% url 'accounts:address_create' %}" class="btn btn-dark">
+                    أضف أول عنوان لك
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}طلباتي — متجر القهوة{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">طلباتي</h2>
+    <a href="{% url 'products:product_list' %}" class="btn btn-outline-dark btn-sm">
+        مواصلة التسوق
+    </a>
+</div>
+
+{% if orders %}
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">الطلب</th>
+                    <th>التاريخ</th>
+                    <th>الحالة</th>
+                    <th class="text-end">الإجمالي</th>
+                    <th class="pe-4 text-end">التفاصيل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="ps-4 fw-semibold">#{{ order.pk }}</td>
+
+                    <td class="text-muted small">{{ order.created_at|date:"j/n/Y" }}</td>
+
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'pending' %}bg-warning text-dark
+                            {% elif order.status == 'processing' %}bg-info text-dark
+                            {% elif order.status == 'shipped' %}bg-primary
+                            {% elif order.status == 'delivered' %}bg-success
+                            {% elif order.status == 'cancelled' %}bg-danger
+                            {% endif %}
+                        ">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+
+                    <td class="text-end fw-semibold">{{ order.total_price }} ر.س</td>
+
+                    <td class="pe-4 text-end">
+                        <a
+                            href="{% url 'orders:order_detail' order.pk %}"
+                            class="btn btn-outline-dark btn-sm"
+                        >
+                            عرض
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% else %}
+<div class="text-center py-5 text-muted">
+    <div class="mb-3" style="font-size: 4rem;">&#128722;</div>
+    <h5 class="mb-2">لا توجد طلبات بعد</h5>
+    <p class="mb-4">طلباتك المكتملة ستظهر هنا.</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-dark px-5">
+        ابدأ التسوق
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

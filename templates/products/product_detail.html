@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — متجر القهوة{% endblock %}
+
+{% block content %}
+
+<!-- ═══ مسار التنقل ═══ -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'products:product_list' %}" class="text-decoration-none">المنتجات</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'products:category_detail' product.category.slug %}" class="text-decoration-none">
+                {{ product.category.name }}
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<!-- ═══ قسم المنتج ═══ -->
+<div class="row g-5 mb-5">
+
+    <!-- عمود الصورة -->
+    <div class="col-md-6">
+        {% if product.image %}
+        <img
+            src="{{ product.image.url }}"
+            alt="{{ product.name }}"
+            class="img-fluid rounded shadow-sm w-100"
+            style="max-height: 420px; object-fit: cover;"
+        >
+        {% else %}
+        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 420px;">
+            <span class="text-muted" style="font-size: 5rem;">&#9749;</span>
+        </div>
+        {% endif %}
+
+        <!-- صور إضافية -->
+        {% if product.images.all %}
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+            {% for img in product.images.all %}
+            <img
+                src="{{ img.image.url }}"
+                alt="{{ img.alt_text|default:product.name }}"
+                class="rounded border"
+                style="width: 72px; height: 72px; object-fit: cover; cursor: pointer;"
+            >
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- عمود التفاصيل -->
+    <div class="col-md-6">
+        <a
+            href="{% url 'products:category_detail' product.category.slug %}"
+            class="badge bg-secondary text-decoration-none mb-2"
+        >
+            {{ product.category.name }}
+        </a>
+
+        <h1 class="h2 mb-2">{{ product.name }}</h1>
+
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <span class="fs-3 fw-bold">{{ product.price }} ر.س</span>
+            {% if product.stock > 0 %}
+                <span class="badge bg-success">متوفر ({{ product.stock }} قطعة)</span>
+            {% else %}
+                <span class="badge bg-danger">غير متوفر</span>
+            {% endif %}
+        </div>
+
+        <p class="text-muted mb-4">{{ product.description }}</p>
+
+        <!-- أضف للسلة -->
+        {% if product.stock > 0 %}
+        <form method="post" action="{% url 'cart:add_to_cart' product.slug %}">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+            <button type="submit" class="btn btn-dark btn-lg px-5">
+                أضف للسلة
+            </button>
+            {% else %}
+            <a
+                href="{% url 'accounts:login' %}?next={{ request.path }}"
+                class="btn btn-dark btn-lg px-5"
+            >
+                سجّل دخولك للشراء
+            </a>
+            {% endif %}
+        </form>
+        {% else %}
+        <button class="btn btn-secondary btn-lg px-5" disabled>نفد المخزون</button>
+        {% endif %}
+
+        <hr class="my-4">
+
+        <dl class="row small text-muted mb-0">
+            <dt class="col-sm-4">التصنيف</dt>
+            <dd class="col-sm-8">{{ product.category.name }}</dd>
+            <dt class="col-sm-4">تاريخ الإضافة</dt>
+            <dd class="col-sm-8">{{ product.created_at|date:"j/n/Y" }}</dd>
+        </dl>
+    </div>
+</div>
+
+<!-- ═══ قسم التقييمات ═══ -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">تقييمات العملاء</h3>
+            {% if user.is_authenticated %}
+            <a href="{% url 'reviews:review_create' product.slug %}" class="btn btn-outline-dark btn-sm">
+                اكتب تقييماً
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-secondary btn-sm">
+                سجّل دخولك للتقييم
+            </a>
+            {% endif %}
+        </div>
+
+        {% with reviews=product.reviews.all %}
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="fw-semibold me-2">{{ review.user.get_full_name|default:review.user.username }}</span>
+                            <span class="text-warning">
+                                {% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+                            </span>
+                        </div>
+                        <small class="text-muted">{{ review.created_at|date:"j/n/Y" }}</small>
+                    </div>
+                    <p class="mt-2 mb-0">{{ review.comment }}</p>
+
+                    {% if user == review.user %}
+                    <div class="d-flex gap-2 mt-3">
+                        <a
+                            href="{% url 'reviews:review_update' review.pk %}"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
+                            تعديل
+                        </a>
+                        <a
+                            href="{% url 'reviews:review_delete' review.pk %}"
+                            class="btn btn-outline-danger btn-sm"
+                        >
+                            حذف
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-4 text-muted border rounded">
+                <p class="mb-0">لا توجد تقييمات بعد. كن أول من يكتب تقييماً!</p>
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+{% endblock %}

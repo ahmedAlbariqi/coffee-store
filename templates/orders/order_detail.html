@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}طلب #{{ order.pk }} — متجر القهوة{% endblock %}
+
+{% block content %}
+
+<!-- ═══ مسار التنقل ═══ -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'orders:order_list' %}" class="text-decoration-none">طلباتي</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">طلب #{{ order.pk }}</li>
+    </ol>
+</nav>
+
+<!-- ═══ رأس الصفحة ═══ -->
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h2 class="mb-1">طلب #{{ order.pk }}</h2>
+        <p class="text-muted small mb-0">تم الطلب في {{ order.created_at|date:"j/n/Y - g:i a" }}</p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <span class="badge fs-6
+            {% if order.status == 'pending' %}bg-warning text-dark
+            {% elif order.status == 'processing' %}bg-info text-dark
+            {% elif order.status == 'shipped' %}bg-primary
+            {% elif order.status == 'delivered' %}bg-success
+            {% elif order.status == 'cancelled' %}bg-danger
+            {% endif %}
+        ">
+            {{ order.get_status_display }}
+        </span>
+
+        {% if order.status == 'pending' %}
+        <form method="post" action="{% url 'orders:order_cancel' order.pk %}">
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="btn btn-outline-danger btn-sm"
+                onclick="return confirm('هل تريد إلغاء هذا الطلب؟')"
+            >
+                إلغاء الطلب
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- ═══ جدول المنتجات ═══ -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">المنتجات المطلوبة</div>
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">المنتج</th>
+                            <th class="text-center">سعر الوحدة</th>
+                            <th class="text-center">الكمية</th>
+                            <th class="text-end pe-4">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr class="border-top">
+                            <td class="ps-4 fw-semibold">{{ item.product_name }}</td>
+                            <td class="text-center text-muted">{{ item.product_price }} ر.س</td>
+                            <td class="text-center">{{ item.quantity }}</td>
+                            <td class="text-end pe-4 fw-semibold">{{ item.get_total_price }} ر.س</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="border-top">
+                        <tr>
+                            <td colspan="3" class="ps-4 fw-bold">إجمالي الطلب</td>
+                            <td class="text-end pe-4 fw-bold fs-5">{{ order.total_price }} ر.س</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ الشريط الجانبي ═══ -->
+    <div class="col-lg-4">
+
+        <!-- معلومات التوصيل -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">معلومات التوصيل</div>
+            <div class="card-body">
+                <dl class="row mb-0 small">
+                    <dt class="col-5 text-muted">الاسم</dt>
+                    <dd class="col-7">{{ order.full_name }}</dd>
+
+                    <dt class="col-5 text-muted">البريد الإلكتروني</dt>
+                    <dd class="col-7 text-break">{{ order.email }}</dd>
+
+                    <dt class="col-5 text-muted">الهاتف</dt>
+                    <dd class="col-7">{{ order.phone }}</dd>
+
+                    <dt class="col-5 text-muted">المدينة</dt>
+                    <dd class="col-7">{{ order.city }}</dd>
+
+                    <dt class="col-5 text-muted">العنوان</dt>
+                    <dd class="col-7 mb-0">{{ order.address }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- ملخص الطلب -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">ملخص</div>
+            <div class="card-body small">
+                <div class="d-flex justify-content-between mb-2 text-muted">
+                    <span>الحالة</span>
+                    <span>{{ order.get_status_display }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-muted">
+                    <span>عدد المنتجات</span>
+                    <span>{{ order.items.count }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>الإجمالي</span>
+                    <span>{{ order.total_price }} ر.س</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

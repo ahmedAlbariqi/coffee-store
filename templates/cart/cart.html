@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}سلة التسوق — متجر القهوة{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">سلة التسوق</h2>
+
+{% if items %}
+
+<div class="row g-4 align-items-start">
+
+    <!-- ═══ جدول المنتجات ═══ -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">المنتج</th>
+                            <th class="text-center">السعر</th>
+                            <th class="text-center">الكمية</th>
+                            <th class="text-center">الإجمالي</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr class="border-top">
+
+                            <!-- معلومات المنتج -->
+                            <td class="ps-4" style="min-width: 200px;">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if item.product.image %}
+                                    <img
+                                        src="{{ item.product.image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        class="rounded"
+                                        style="width: 60px; height: 60px; object-fit: cover;"
+                                    >
+                                    {% else %}
+                                    <div
+                                        class="rounded bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+                                        style="width: 60px; height: 60px;"
+                                    >
+                                        <span class="text-muted">&#9749;</span>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <a
+                                            href="{% url 'products:product_detail' item.product.slug %}"
+                                            class="text-dark text-decoration-none fw-semibold"
+                                        >
+                                            {{ item.product.name }}
+                                        </a>
+                                        <p class="text-muted small mb-0">{{ item.product.category.name }}</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- سعر الوحدة -->
+                            <td class="text-center">{{ item.product.price }} ر.س</td>
+
+                            <!-- نموذج تحديث الكمية -->
+                            <td class="text-center" style="min-width: 150px;">
+                                <form
+                                    method="post"
+                                    action="{% url 'cart:update_item' item.pk %}"
+                                    class="d-flex align-items-center justify-content-center gap-2"
+                                >
+                                    {% csrf_token %}
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        value="{{ item.quantity }}"
+                                        min="0"
+                                        max="{{ item.product.stock }}"
+                                        class="form-control form-control-sm text-center"
+                                        style="width: 65px;"
+                                    >
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                        تحديث
+                                    </button>
+                                </form>
+                            </td>
+
+                            <!-- إجمالي العنصر -->
+                            <td class="text-center fw-semibold">{{ item.get_total_price }} ر.س</td>
+
+                            <!-- حذف -->
+                            <td class="pe-4 text-center">
+                                <form method="post" action="{% url 'cart:remove_item' item.pk %}">
+                                    {% csrf_token %}
+                                    <button
+                                        type="submit"
+                                        class="btn btn-link text-danger p-0"
+                                        title="حذف المنتج"
+                                        aria-label="حذف {{ item.product.name }}"
+                                    >
+                                        &times;
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- إفراغ السلة -->
+        <div class="mt-3">
+            <form method="post" action="{% url 'cart:clear_cart' %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="return confirm('هل تريد إفراغ سلة التسوق بالكامل؟')"
+                >
+                    إفراغ السلة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══ ملخص الطلب ═══ -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">ملخص الطلب</div>
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mb-2 text-muted small">
+                    <span>المجموع الفرعي</span>
+                    <span>{{ total }} ر.س</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-muted small">
+                    <span>الشحن</span>
+                    <span>يُحسب عند الدفع</span>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+                    <span>الإجمالي</span>
+                    <span>{{ total }} ر.س</span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-dark btn-lg">
+                        إتمام الشراء
+                    </a>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary btn-sm">
+                        مواصلة التسوق
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- ═══ سلة فارغة ═══ -->
+<div class="text-center py-5">
+    <div class="mb-4" style="font-size: 5rem; line-height: 1;">&#9749;</div>
+    <h4 class="mb-2">سلتك فارغة</h4>
+    <p class="text-muted mb-4">لم تضف أي منتجات بعد.</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-dark px-5">
+        تصفح المنتجات
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}

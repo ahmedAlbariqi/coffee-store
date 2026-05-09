@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}الدفع — متجر القهوة{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">إتمام الشراء</h2>
+
+<form method="post" novalidate>
+{% csrf_token %}
+
+<div class="row g-4 align-items-start">
+
+    <!-- ═══ نموذج التوصيل ═══ -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">معلومات التوصيل</div>
+            <div class="card-body p-4">
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- الاسم الكامل -->
+                <div class="mb-3">
+                    <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                        الاسم الكامل <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="{{ form.full_name.html_name }}"
+                        id="{{ form.full_name.id_for_label }}"
+                        class="form-control{% if form.full_name.errors %} is-invalid{% endif %}"
+                        value="{{ form.full_name.value|default:'' }}"
+                        required
+                    >
+                    {% for error in form.full_name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- البريد الإلكتروني -->
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        البريد الإلكتروني <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        name="{{ form.email.html_name }}"
+                        id="{{ form.email.id_for_label }}"
+                        class="form-control{% if form.email.errors %} is-invalid{% endif %}"
+                        value="{{ form.email.value|default:'' }}"
+                        required
+                    >
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- رقم الهاتف -->
+                <div class="mb-3">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">
+                        رقم الهاتف <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="tel"
+                        name="{{ form.phone.html_name }}"
+                        id="{{ form.phone.id_for_label }}"
+                        class="form-control{% if form.phone.errors %} is-invalid{% endif %}"
+                        value="{{ form.phone.value|default:'' }}"
+                        required
+                    >
+                    {% for error in form.phone.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- المدينة -->
+                <div class="mb-3">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">
+                        المدينة <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="{{ form.city.html_name }}"
+                        id="{{ form.city.id_for_label }}"
+                        class="form-control{% if form.city.errors %} is-invalid{% endif %}"
+                        value="{{ form.city.value|default:'' }}"
+                        required
+                    >
+                    {% for error in form.city.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- العنوان التفصيلي -->
+                <div class="mb-0">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">
+                        العنوان التفصيلي <span class="text-danger">*</span>
+                    </label>
+                    <textarea
+                        name="{{ form.address.html_name }}"
+                        id="{{ form.address.id_for_label }}"
+                        class="form-control{% if form.address.errors %} is-invalid{% endif %}"
+                        rows="3"
+                        required
+                    >{{ form.address.value|default:'' }}</textarea>
+                    {% for error in form.address.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ ملخص الطلب ═══ -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">ملخص الطلب</div>
+
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">المنتج</th>
+                            <th class="text-center">الكمية</th>
+                            <th class="text-end pe-4">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr class="border-top">
+                            <td class="ps-4">
+                                <span class="fw-semibold small">{{ item.product.name }}</span>
+                                <p class="text-muted small mb-0">{{ item.product.price }} ر.س للقطعة</p>
+                            </td>
+                            <td class="text-center small">{{ item.quantity }}</td>
+                            <td class="text-end pe-4 small fw-semibold">{{ item.get_total_price }} ر.س</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="border-top">
+                        <tr>
+                            <td colspan="2" class="ps-4 fw-bold">الإجمالي</td>
+                            <td class="text-end pe-4 fw-bold fs-5">{{ total }} ر.س</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="card-footer bg-white border-top-0 p-4 pt-0">
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-dark btn-lg">
+                        تأكيد الطلب
+                    </button>
+                    <a href="{% url 'cart:cart' %}" class="btn btn-outline-secondary btn-sm">
+                        &rarr; العودة للسلة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</form>
+
+{% endblock %}

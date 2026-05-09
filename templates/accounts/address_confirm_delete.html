@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}حذف العنوان — متجر القهوة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white fw-semibold">
+                تأكيد الحذف
+            </div>
+            <div class="card-body p-4">
+
+                <p class="mb-3">هل أنت متأكد من حذف هذا العنوان؟</p>
+
+                <!-- معاينة العنوان -->
+                <div class="bg-light rounded p-3 mb-4 small">
+                    <p class="fw-semibold mb-1">{{ object.full_name }}</p>
+                    <p class="text-muted mb-1">{{ object.phone }}</p>
+                    <p class="mb-1">{{ object.street }}</p>
+                    <p class="mb-0">{{ object.city }}</p>
+                </div>
+
+                <p class="text-muted small mb-4">لا يمكن التراجع عن هذا الإجراء.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">نعم، احذف</button>
+                        <a href="{% url 'accounts:address_list' %}" class="btn btn-outline-secondary">إلغاء</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

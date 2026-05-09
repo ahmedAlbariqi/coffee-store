@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}ملفي الشخصي — متجر القهوة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">ملفي الشخصي</h2>
+            <a href="{% url 'accounts:profile_update' %}" class="btn btn-outline-dark btn-sm">
+                تعديل الملف
+            </a>
+        </div>
+
+        <!-- بطاقة المعلومات الشخصية -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white fw-semibold">المعلومات الشخصية</div>
+            <div class="card-body">
+
+                {% if profile_user.avatar %}
+                <div class="mb-3 text-center">
+                    <img
+                        src="{{ profile_user.avatar.url }}"
+                        alt="الصورة الشخصية"
+                        class="rounded-circle"
+                        width="96"
+                        height="96"
+                        style="object-fit: cover;"
+                    >
+                </div>
+                {% endif %}
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">الاسم الكامل</dt>
+                    <dd class="col-sm-8">
+                        {{ profile_user.get_full_name|default:"—" }}
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">اسم المستخدم</dt>
+                    <dd class="col-sm-8">{{ profile_user.username }}</dd>
+
+                    <dt class="col-sm-4 text-muted">البريد الإلكتروني</dt>
+                    <dd class="col-sm-8">{{ profile_user.email|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">رقم الهاتف</dt>
+                    <dd class="col-sm-8">{{ profile_user.phone|default:"—" }}</dd>
+
+                    {% if profile_user.bio %}
+                    <dt class="col-sm-4 text-muted">نبذة شخصية</dt>
+                    <dd class="col-sm-8">{{ profile_user.bio }}</dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4 text-muted">عضو منذ</dt>
+                    <dd class="col-sm-8">{{ profile_user.date_joined|date:"j/n/Y" }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- روابط سريعة -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">الحساب</div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'accounts:address_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    إدارة العناوين
+                    <span class="text-muted">&lsaquo;</span>
+                </a>
+                <a href="{% url 'orders:order_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    طلباتي
+                    <span class="text-muted">&lsaquo;</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
