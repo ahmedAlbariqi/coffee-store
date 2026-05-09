@@ -6,103 +6,228 @@
     <title>{% block title %}متجر القهوة{% endblock %}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
 
     <style>
-        body { display: flex; flex-direction: column; min-height: 100vh; }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Tajawal', sans-serif;
+        }
         main { flex: 1; }
-        .navbar-brand { font-size: 1.4rem; letter-spacing: 0.5px; }
-        .footer { background-color: #212529; }
+
+        /* ─── Top bar ─── */
+        .topbar {
+            background-color: #1e2d14;
+            padding: .65rem 0;
+        }
+        .topbar .brand-link {
+            color: #f0ece0;
+            text-decoration: none;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+        .topbar .brand-link:hover { color: #8fb06a; }
+
+        .topbar .search-form .form-control {
+            background-color: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #f0ece0;
+            border-radius: .4rem 0 0 .4rem;
+            min-width: 220px;
+        }
+        .topbar .search-form .form-control::placeholder { color: #b8a898; }
+        .topbar .search-form .form-control:focus {
+            background-color: rgba(255,255,255,.14);
+            border-color: #8fb06a;
+            box-shadow: none;
+            color: #f0ece0;
+        }
+        .topbar .search-form .btn-search {
+            background-color: #f0ece0;
+            border: none;
+            color: #1e2d14;
+            border-radius: 0 .4rem .4rem 0;
+            padding: .375rem .75rem;
+        }
+        .topbar .search-form .btn-search:hover { background-color: #ddd8cc; }
+
+        .topbar .icon-link {
+            color: #f0ece0 !important;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .topbar .icon-link:hover { color: #8fb06a !important; }
+
+        /* ─── Bottom bar (nav links) ─── */
+        .bottombar {
+            background-color: #E5E5E5;
+            padding: 0;
+        }
+        .bottombar .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0;
+        }
+        .bottombar .nav-list li a {
+            display: block;
+            color: #3a5a28;
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 1.4rem 1.8rem;
+            border-bottom: 3px solid transparent;
+            transition: color .2s, border-color .2s, background-color .2s;
+        }
+        .bottombar .nav-list li a:hover,
+        .bottombar .nav-list li a.active {
+            color: #1e2d14;
+            border-bottom-color: #1e2d14;
+            background-color: rgba(58,90,40,.1);
+        }
+
+        /* ─── Mobile toggler ─── */
+        .mobile-toggler {
+            background: none;
+            border: 1px solid rgba(255,255,255,.25);
+            color: #f0ece0;
+            border-radius: .35rem;
+            padding: .3rem .6rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* ─── User dropdown ─── */
+        .topbar .dropdown-menu {
+            background-color: #1e2d14;
+            border: 1px solid rgba(255,255,255,.15);
+            min-width: 180px;
+        }
+        .topbar .dropdown-menu .dropdown-item {
+            color: #f0ece0;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .topbar .dropdown-menu .dropdown-item:hover { background-color: #152210; color: #8fb06a; }
+        .topbar .dropdown-menu .dropdown-divider { border-color: rgba(255,255,255,.15); }
+
+        /* ─── Footer ─── */
+        .footer { background-color: #1e2d14; }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-light">
 
-    <!-- ═══ شريط التنقل ═══ -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'products:product_list' %}">
-                &#9749; متجر القهوة
-            </a>
+    <!-- ═══ الشريط العلوي ═══ -->
+    <div class="topbar">
+        <div class="container d-flex align-items-center justify-content-between gap-3 flex-wrap">
 
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#mainNav"
-                aria-controls="mainNav"
-                aria-expanded="false"
-                aria-label="فتح القائمة"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- الشعار -->
+            <a class="brand-link" href="{% url 'home' %}">&#9749; متجر القهوة</a>
 
-            <div class="collapse navbar-collapse" id="mainNav">
-                <!-- روابط رئيسية -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:product_list' %}">المنتجات</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:category_list' %}">التصنيفات</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart:cart' %}">السلة</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'orders:order_list' %}">طلباتي</a>
-                    </li>
-                    {% endif %}
-                </ul>
+            <!-- بحث + أيقونات -->
+            <div class="d-flex align-items-center gap-3">
 
-                <!-- روابط المستخدم -->
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="userDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            {{ user.get_full_name|default:user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'accounts:profile' %}">الملف الشخصي</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'accounts:profile_update' %}">تعديل الملف</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'accounts:address_list' %}">عناويني</a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        تسجيل الخروج
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:login' %}">تسجيل الدخول</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light btn-sm px-3 ms-2" href="{% url 'accounts:register' %}">
-                            إنشاء حساب
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                <!-- نموذج البحث -->
+                <form class="search-form d-flex" method="get" action="{% url 'products:product_list' %}">
+                    <input
+                        type="search"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="ابحث عن منتج…"
+                        value="{{ request.GET.q|default:'' }}"
+                    >
+                    <button type="submit" class="btn-search">&#128269;</button>
+                </form>
+
+                <!-- أيقونة المستخدم -->
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <a class="icon-link dropdown-toggle"
+                       href="#"
+                       id="userDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false"
+                       title="{{ user.get_full_name|default:user.username }}">
+                        حسابي
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'accounts:profile' %}">الملف الشخصي</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'accounts:profile_update' %}">تعديل الملف</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'accounts:address_list' %}">عناويني</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'orders:order_list' %}">طلباتي</a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">
+                                    تسجيل الخروج
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+                {% else %}
+                <a class="icon-link" href="{% url 'accounts:login' %}" title="تسجيل الدخول">حسابي</a>
+                {% endif %}
+
+                <!-- أيقونة السلة -->
+                <a class="icon-link" href="{% url 'cart:cart' %}" title="السلة">&#128722;</a>
+
             </div>
+        </div>
+    </div>
+
+    <!-- ═══ الشريط السفلي (روابط التنقل) ═══ -->
+    <nav class="bottombar" aria-label="التنقل الرئيسي">
+        <div class="container">
+            <ul class="nav-list">
+                <li>
+                    <a href="{% url 'home' %}"
+                       class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        الرئيسية
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'products:product_list' %}"
+                       class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+                        تخفيضات
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'products:category_detail' 'mahassil-alqahwa' %}"
+                       class="{% if request.resolver_match.url_name == 'category_detail' and request.resolver_match.kwargs.slug == 'mahassil-alqahwa' %}active{% endif %}">
+                        محاصيل القهوة
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'products:category_detail' 'adawat-alqahwa' %}"
+                       class="{% if request.resolver_match.url_name == 'category_detail' and request.resolver_match.kwargs.slug == 'adawat-alqahwa' %}active{% endif %}">
+                        أدوات القهوة والباريستا
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'products:category_detail' 'alakwab' %}"
+                       class="{% if request.resolver_match.url_name == 'category_detail' and request.resolver_match.kwargs.slug == 'alakwab' %}active{% endif %}">
+                        الأكواب
+                    </a>
+                </li>
+            </ul>
         </div>
     </nav>
 

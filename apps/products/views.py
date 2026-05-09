@@ -1,7 +1,22 @@
 from django.db.models import Q
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import Category, Product
+
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['latest_products'] = (
+            Product.objects
+            .filter(is_active=True)
+            .select_related('category')
+            .order_by('-created_at')[:8]
+        )
+        context['categories'] = Category.objects.filter(is_active=True)
+        return context
 
 
 class ProductListView(ListView):

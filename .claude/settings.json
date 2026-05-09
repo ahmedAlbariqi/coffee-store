@@ -4,7 +4,8 @@
       "Bash(git commit *)",
       "Bash(git branch *)",
       "Bash(git remote *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python manage.py shell -c \"from apps.products.models import Category; [print\\(c.name, '|', c.slug\\) for c in Category.objects.all\\(\\)]\")"
     ]
   }
 }

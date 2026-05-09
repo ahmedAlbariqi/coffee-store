@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}متجر القهوة — اكتشف عالم القهوة الفاخر{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --coffee-dark:  #2a3320;
+        --coffee-gold:  #8fb06a;
+        --coffee-text:  #f0ece0;
+        --coffee-card:  #344028;
+        --coffee-muted: #b8a898;
+    }
+
+    body, .hero-title, .hero-subtitle { font-family: 'Tajawal', sans-serif; }
+
+    /* ─── Hero ─── */
+    .hero {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        width: 100vw;
+        margin-right: calc(-50vw + 50%);
+        margin-left: calc(-50vw + 50%);
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+        pointer-events: none;
+    }
+    .hero-title {
+        color: var(--coffee-text);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    .hero-subtitle {
+        color: var(--coffee-muted);
+        font-size: 1.2rem;
+    }
+    .btn-gold {
+        background-color: var(--coffee-gold);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        padding: .75rem 2rem;
+        border-radius: .5rem;
+        transition: filter .2s;
+    }
+    .btn-gold:hover {
+        filter: brightness(1.15);
+        color: #fff;
+    }
+    /* ─── Section headings ─── */
+    .section-title {
+        color: var(--coffee-dark);
+        font-weight: 800;
+        position: relative;
+        display: inline-block;
+        padding-bottom: .5rem;
+    }
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50%;
+        height: 3px;
+        background: var(--coffee-gold);
+        border-radius: 2px;
+    }
+
+    /* ─── Category cards ─── */
+    .category-card {
+        background: linear-gradient(135deg, #DADAB3, #D0CFA4, #A2A26F);
+        border: none;
+        border-radius: .75rem;
+        transition: transform .25s, box-shadow .25s;
+        text-decoration: none;
+        color: #39421D;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 110px;
+        padding: 2rem 1.5rem;
+    }
+    .category-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0,0,0,.35);
+        color: #39421D;
+    }
+    .category-name {
+        color: #39421D;
+        font-weight: 800;
+        font-size: 1.2rem;
+        margin-top: .5rem;
+    }
+    .category-count {
+        color: #39421D;
+        font-size: 0.95rem;
+    }
+
+    /* ─── Product cards ─── */
+    .product-card {
+        background: #ffffff;
+        border: 1px solid #e8ede4;
+        border-radius: 12px;
+        transition: transform .25s, box-shadow .25s;
+        overflow: hidden;
+        position: relative;
+    }
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,.1);
+    }
+    .product-card .card-img-wrapper {
+        background: #f8f5f0;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+    }
+    .product-card img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+    }
+    .product-card .card-title {
+        color: #39421D;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    .product-card .price {
+        color: #3a5a28;
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+    .product-card .category-badge {
+        background: #e8ede4;
+        color: #3a5a28;
+        font-size: .75rem;
+        border-radius: .3rem;
+        padding: .15rem .5rem;
+    }
+    .product-card .new-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #3a5a28;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: .2rem .55rem;
+        border-radius: .3rem;
+    }
+    .product-card .btn-add-cart {
+        width: 100%;
+        background: #2a3320;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: .45rem 0;
+        font-family: 'Tajawal', sans-serif;
+        font-weight: 700;
+        transition: background .2s;
+    }
+    .product-card .btn-add-cart:hover { background: #1e2d14; color: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# ════ Hero ════ #}
+<section class="hero"
+         style="background-image: url('{% static 'images/hero.jpg' %}');">
+    <div class="container position-relative" style="z-index: 1;">
+        <div class="row justify-content-center">
+
+            <div class="col-lg-12 text-center">
+                <h1 class="hero-title mb-4">
+                    اكتشف عالم<br>
+                    <span style="color: var(--coffee-gold);">القهوة الفاخر</span>
+                </h1>
+                <p class="hero-subtitle mb-5">
+                    أجود أنواع البن وأدوات القهوة الاحترافية<br>
+                    من أرقى المصادر حول العالم
+                </p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-gold btn-lg">
+                    تسوق الآن &larr;
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{# ════ Categories ════ #}
+{% if categories %}
+<section class="py-5">
+    <div class="container">
+
+        <h2 class="section-title mb-5">تسوق حسب التصنيف</h2>
+
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{% url 'products:category_detail' category.slug %}" class="category-card p-4 text-center">
+                    <p class="category-name mb-1">{{ category.name }}</p>
+                    <p class="category-count mb-0">
+                        {{ category.products.filter.is_active|default:'' }}
+                        تصفّح المنتجات ←
+                    </p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endif %}
+
+{# ════ Latest Products ════ #}
+{% if latest_products %}
+<section class="py-5" style="background-color: #f0ede6;">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+            <h2 class="section-title mb-0">أحدث المنتجات</h2>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-dark btn-sm">
+                عرض الكل &larr;
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in latest_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card product-card h-100">
+
+                    <span class="new-badge">جديد</span>
+
+                    <a href="{% url 'products:product_detail' product.slug %}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="card-img-wrapper">&#9749;</div>
+                        {% endif %}
+                    </a>
+
+                    <div class="card-body d-flex flex-column p-3">
+                        <span class="category-badge mb-2 align-self-start">{{ product.category.name }}</span>
+                        <h6 class="card-title mb-2">
+                            <a href="{% url 'products:product_detail' product.slug %}"
+                               style="color: inherit; text-decoration: none;">
+                                {{ product.name }}
+                            </a>
+                        </h6>
+                        <div class="mt-auto pt-2">
+                            <span class="price d-block mb-2">{{ product.price }} ر.س</span>
+
+                            {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'cart:add_to_cart' product.slug %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-add-cart">أضف للسلة</button>
+                            </form>
+                            {% else %}
+                            <a href="{% url 'accounts:login' %}?next={% url 'products:product_detail' product.slug %}"
+                               class="btn-add-cart d-block text-center text-decoration-none">
+                                أضف للسلة
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
