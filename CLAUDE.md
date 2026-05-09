@@ -95,6 +95,15 @@ coffee_store/
 - All models registered in admin panel
 - Next step: Views, URLs, Templates
 
+## Version Control
+- Push to GitHub after every major milestone
+- Use this commit sequence:
+  git add .
+  git commit -m "number - short description"
+  git push
+- Never wait too long before pushing — protect the work
+- Repository: https://github.com/ahmedAlbariqi/coffee-store
+
 ## What's Done
 - accounts: CustomUser, Address ✅
 - products: Category, Product, ProductImage ✅
